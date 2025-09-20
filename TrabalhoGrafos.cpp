@@ -85,6 +85,7 @@ class GraphMatrix{
         }
     }
     auto time = chrono::steady_clock::now() - start;
+    output << "BFS(Vértice: Nível, Pai): ";
     output << "[";
         for(int i = 0; i < this->lenght; i++){
             output << "(" << i + 1 << ": " << marksdistance[i] << ", " << tree[i] << "), ";
@@ -104,24 +105,23 @@ class GraphMatrix{
                 int actual = vertexstack.top();
                 vertexstack.pop();
                 for (int i = 0; i < this->lenght; i++){
-                    if (this->matrix[actual][i] != 0){
-                        if (marksdistance[i] == -1){
-                            marksdistance[i] = marksdistance[actual] + 1;
-                            tree[i] = actual + 1;
-                            vertexstack.push(i);
+                    if (this->matrix[actual][this->lenght - i - 1] != 0){
+                        if (marksdistance[this-> lenght - i - 1] == -1){
+                            marksdistance[this->lenght - i - 1] = marksdistance[actual] + 1;
+                            tree[this->lenght - i - 1] = actual + 1;
+                            vertexstack.push(this->lenght - i - 1);
                         }
                     }
             }
         }
         auto time = chrono::steady_clock::now() - start;
+        output << "DFS(Vértice: Nível, Pai): ";
         output << "[";
             for(int i = 0; i < this->lenght; i++){
                 output << "(" << i + 1 << ": " << marksdistance[i] << ", " << tree[i] << "), ";
             }
         output << "]" << endl;
         output << "Tempo de Execução: "<< chrono::duration_cast<chrono::milliseconds>(time).count() << "ms" << endl;
-
-
     }
 
         void distance(int vertex, int target){
@@ -155,6 +155,7 @@ class GraphMatrix{
         }
 
         auto time = chrono::steady_clock::now() - start;
+        output << "A distância entre " << vertex << " e " << target << " é: ";
         output << d << endl;
         output << "Tempo de Execução: "<< chrono::duration_cast<chrono::milliseconds>(time).count() << "ms" << endl;
 
@@ -190,6 +191,7 @@ class GraphMatrix{
             }
         }   
         auto time = chrono::steady_clock::now() - start;
+        output << "O diametro do grafo é: ";
         output << diameter << endl;
         output << "Tempo de Execução: "<< chrono::duration_cast<chrono::milliseconds>(time).count() << "ms" << endl;
         }
@@ -241,6 +243,7 @@ class GraphMatrix{
 
 
         auto time = chrono::steady_clock::now() - start;
+        output << "O diametro rapido é: ";
         output << d << endl;
         output << "Tempo de Execução: "<< chrono::duration_cast<chrono::milliseconds>(time).count() << "ms" << endl;
 
@@ -378,6 +381,7 @@ class GraphList{
                 }
             }
             auto time = chrono::steady_clock::now() - start;
+            output << "BFS(Vértice: Nível, Pai): ";
             output << "[";
             for(int i = 0; i < this->lenght; i++){
                 output << "(" << i + 1 << ": " << marksdistance[i] << ", " << tree[i] << "), ";
@@ -397,24 +401,29 @@ class GraphList{
             while(vertexstack.empty() != true){
                 int actual = vertexstack.top();
                 vertexstack.pop();
-                for(auto i =  this->list[actual].begin(); i != this->list[actual].end(); i++){
-                    if(marksdistance[*i] == -1){
-                        marksdistance[*i] = marksdistance[actual] + 1;
-                        tree[*i] = actual + 1;
-                        vertexstack.push(*i);
+                vector<int> neighbors;
+                for(int neighbor_node : this->list[actual]){
+                    neighbors.push_back(neighbor_node);
+                }
+
+                for(auto i = neighbors.rbegin(); i != neighbors.rend(); ++i){
+                    int neighbor_node = *i;
+                    if(marksdistance[neighbor_node] == -1){
+                        marksdistance[neighbor_node] = marksdistance[actual] + 1;
+                        tree[neighbor_node] = actual + 1;
+                        vertexstack.push(neighbor_node);
                     }
                 }
-            }
-            auto time = chrono::steady_clock::now() - start;
-            output << "[";
-            for(int i = 0; i < this->lenght; i++){
-                output << "(" << i + 1 << ": " << marksdistance[i] << ", " << tree[i] << "), ";
-            }
-            output << "]" << endl;
-            output << "Tempo de Execução: "<< chrono::duration_cast<chrono::milliseconds>(time).count() << "ms" << endl;
-
+                }
+                auto time = chrono::steady_clock::now() - start;
+                output << "DFS(Vértice: Nível, Pai): ";
+                output << "[";
+                for(int i = 0; i < this->lenght; i++){
+                    output << "(" << i + 1 << ": " << marksdistance[i] << ", " << tree[i] << "), ";
+                }
+                output << "]" << endl;
+                output << "Tempo de Execução: "<< chrono::duration_cast<chrono::milliseconds>(time).count() << "ms" << endl;
         }
-
         void distance(int vertex, int target){
             auto start = chrono::steady_clock::now();
             vector<int> marksdistance(this->lenght, -1);
@@ -448,9 +457,9 @@ class GraphList{
             }
 
             auto time = chrono::steady_clock::now() - start;
+            output << "A distancia entre " << vertex << " e " << target << " é: ";
             output << d << endl;
             output << "Tempo de Execução: "<< chrono::duration_cast<chrono::milliseconds>(time).count() << "ms" << endl;
-
 
         }
         void diameter(){
@@ -462,6 +471,7 @@ class GraphList{
             marksdistance[i] = 0;
             vertexqueue.push(i);
             int maxdistance = 0;
+            int x;
             while(vertexqueue.empty() != true){
                 int actual = vertexqueue.front();
                 vertexqueue.pop();
@@ -470,6 +480,7 @@ class GraphList{
                         marksdistance[*j] = marksdistance[actual] + 1;
                         if(maxdistance < marksdistance[*j]){
                             maxdistance = marksdistance[*j];
+                            x = *j;
                         }
                         vertexqueue.push(*j);
                     }
@@ -480,6 +491,7 @@ class GraphList{
             }
         }
         auto time = chrono::steady_clock::now() - start;
+        output << "O diâmetro do grafo é: ";
         output << d << endl;
         output << "Tempo de Execução: "<< chrono::duration_cast<chrono::milliseconds>(time).count() << "ms" << endl;
     }
@@ -524,8 +536,8 @@ class GraphList{
                     }
                 }
             d = max2;
-
             auto time = chrono::steady_clock::now() - start;
+            output << "O diâmetro rápido do grafo é: ";
             output << d << endl;
             output << "Tempo de Execução: "<< chrono::duration_cast<chrono::milliseconds>(time).count() << "ms" << endl;
 
@@ -589,18 +601,18 @@ GraphMatrix matrix(graph, matrixoutput);
 graph.close();
 //matrix.degree();
 //matrix.BFS(6);
-//matrix.DFS(6);
+matrix.DFS(2);
 //matrix.distance(6, 122);
 //matrix.CC();
-//matrixoutput.close();
-graph.open("grafo_2.txt");
+matrixoutput.close();
+graph.open("grafo_1.txt");
 ofstream listoutput("listoutput.txt");
 GraphList list(graph, listoutput);
-//list.degree();
-list.BFS(2);
-//list.DFS(2);
-//list.distance(6,12);
-list.diameter();
-//list.CC();
+list.degree();
+list.BFS(1);
+list.DFS(2);
+list.distance(6,12);
+//list.diameter();
+list.CC();
 
 }
