@@ -594,16 +594,17 @@ class GraphList{
 
 int main(){
 
+//Exemplos de funcionamento
+
 ifstream graph;
 graph.open("grafo_1.txt");
 ofstream matrixoutput("matrixoutput.txt");
 GraphMatrix matrix(graph, matrixoutput);
 graph.close();
-//matrix.degree();
-//matrix.BFS(6);
+matrix.BFS(1);
 matrix.DFS(2);
-//matrix.distance(6, 122);
-//matrix.CC();
+matrix.distance(6, 12);
+matrix.CC();
 matrixoutput.close();
 graph.open("grafo_1.txt");
 ofstream listoutput("listoutput.txt");
@@ -612,7 +613,5 @@ list.degree();
 list.BFS(1);
 list.DFS(2);
 list.distance(6,12);
-//list.diameter();
 list.CC();
-
 }
