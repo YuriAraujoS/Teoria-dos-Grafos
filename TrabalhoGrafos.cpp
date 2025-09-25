@@ -199,11 +199,46 @@ class GraphMatrix{
         void fastdiameter(){
             auto start = chrono::steady_clock::now();
             int d;
-            pair<int,int> max1 = {0, 0};
+            vector<int> marks(this->lenght, 0);
+            vector<pair<int, int>> component;
+            int n = 1;
+            for(int i = 0; i < this->lenght; i++){
+                if (marks[i] == 0){
+                    int CClenght = 1;
+                    queue<int> vertexqueue;
+                    marks[i] = n;
+                    vertexqueue.push(i);
+                    while (vertexqueue.empty() == false){
+                        int actual = vertexqueue.front();
+                        vertexqueue.pop();
+                        for (int j = 0; j < this->lenght; j++){
+                            if (this->matrix[actual][j] != 0){
+                                if (marks[j] == 0){
+                                    marks[j] = n;
+                                    CClenght++;
+                                    vertexqueue.push(j);
+                                }
+                            }
+                        }
+                    }
+                    pair<int, int> x = {CClenght, n};
+                    component.push_back(x);
+                    n++;
+                }
+            }
+            sort(component.rbegin(), component.rend());
+            int inicial;
+            for(int i = 0; i < lenght; i++){
+                if(component[0].second == marks[i]){
+                    inicial = i;
+                    break;
+                }
+            }
+            pair<int,int> max1 = {inicial, 0};
             vector<int> marksdistance(this->lenght, -1);
             queue<int> vertexqueue;
-            marksdistance[0] = 0;
-            vertexqueue.push(0);
+            marksdistance[inicial] = 0;
+            vertexqueue.push(inicial);
             while (vertexqueue.empty() == false){
                 int actual = vertexqueue.front();
                 vertexqueue.pop();
@@ -498,12 +533,45 @@ class GraphList{
 
     void fastdiameter(){
         auto start = chrono::steady_clock::now();
+            vector<int> marks(this-> lenght, 0);
+            vector<pair<int,int>> component;
+            int n = 1;
+            for(int i = 0; i < this->lenght; i++){
+                if(marks[i] == 0){
+                    int CClenght = 1;
+                    queue<int> vertexqueue;
+                    marks[i] = n;
+                    vertexqueue.push(i);
+                    while(vertexqueue.empty() != true){
+                        int actual = vertexqueue.front();
+                        vertexqueue.pop();
+                        for(auto j =  this->list[actual].begin(); j != this->list[actual].end(); j++){
+                            if(marks[*j] == 0){
+                                marks[*j] = marks[actual];
+                                CClenght++;
+                                vertexqueue.push(*j);
+                            }
+                        }
+                    }
+                    pair<int, int> x = {CClenght, n};
+                    component.push_back(x);
+                    n++;
+                }
+            }
+            int inicial;
+            sort(component.rbegin(), component.rend());
+            for(int i = 0; i < lenght; i++){
+                if(component[0].second == marks[i]){
+                    inicial = i;
+                    break;
+                }
+            }
             vector<int> marksdistance(this->lenght, -1);
             queue<int> vertexqueue;
             int d;
-            pair<int, int> max1 = {0, 0};
-            marksdistance[0] = 0;
-            vertexqueue.push(0);
+            pair<int, int> max1 = {inicial, 0};
+            marksdistance[inicial] = 0;
+            vertexqueue.push(inicial);
                 while(vertexqueue.empty() != true){
                     int actual = vertexqueue.front();
                     vertexqueue.pop();
@@ -572,6 +640,7 @@ class GraphList{
                 n++;
             }
         }
+        sort(component.rbegin(), component.rend());
         auto time = chrono::steady_clock::now() - start;
         for(int i = 0; i < component.size(); i++){
             output << "Componente de Tamanho " << component[i].first << ":" << "[";
@@ -597,21 +666,23 @@ int main(){
 //Exemplos de funcionamento
 
 ifstream graph;
-graph.open("grafo_1.txt");
+graph.open("grafo_2.txt");
 ofstream matrixoutput("matrixoutput.txt");
 GraphMatrix matrix(graph, matrixoutput);
 graph.close();
 matrix.BFS(1);
 matrix.DFS(2);
 matrix.distance(6, 12);
+matrix.fastdiameter();
 matrix.CC();
 matrixoutput.close();
-graph.open("grafo_1.txt");
+graph.open("grafo_2.txt");
 ofstream listoutput("listoutput.txt");
 GraphList list(graph, listoutput);
 list.degree();
 list.BFS(1);
 list.DFS(2);
 list.distance(6,12);
+list.fastdiameter();
 list.CC();
 }
